@@ -25,7 +25,7 @@
       <div class="flex flex-col md:flex-row gap-2 mb-4 bg-slate-50 p-3 rounded-xl">
         <input type="date" id="newDateInput" class="p-2 border border-slate-300 rounded-lg flex-1 text-sm bg-white">
         <input type="text" id="newTimeInput" value="15:00-18:00" class="p-2 border border-slate-300 rounded-lg flex-1 text-sm bg-white">
-        <button id="addDateBtn" class="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-semibold">➕ 新增日期</button>
+        <button id="addDateBtn" class="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all active:scale-95">➕ 新增日期</button>
       </div>
       
       <div class="overflow-x-auto border border-slate-200 rounded-xl">
@@ -52,16 +52,15 @@
   </div>
 
   <script>
-    // 已更新為您提供的新 Google 雲端網址
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyIKIESS61AvND8YYXCOJ1rBQTw7ucsiQTgNi7NKUS7ZG5Gj4WBrQ2OeCL2_UgOrLRW/exec';
-    
-    // 後台管理員登入密碼
+    // 🔗 已更新為您最新的 Google 雲端網址
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLaF-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
     const MASTER_PASSWORD = '123456789'; 
 
     const loginWall = document.getElementById('loginWall');
     const adminDashboard = document.getElementById('adminDashboard');
     const historyTableBody = document.getElementById('historyTableBody');
     const dateListBody = document.getElementById('dateListBody');
+    const addDateBtn = document.getElementById('addDateBtn');
 
     document.getElementById('loginBtn').addEventListener('click', () => {
       if (document.getElementById('adminPassword').value === MASTER_PASSWORD) {
@@ -74,52 +73,97 @@
     });
 
     async function loadAdminData() {
+      historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-indigo-600 animate-pulse">正在連線到 Google 雲端...</td></tr>`;
+      dateListBody.innerHTML = `<tr><td colSpan="3" class="p-4 text-center text-indigo-600 animate-pulse">載入中...</td></tr>`;
+      
       // 1. 讀取請假紀錄
-      historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-indigo-600 animate-pulse">載入雲端數據中...</td></tr>`;
       try {
         const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeaves`);
         const records = await res.json();
-        historyTableBody.innerHTML = records.reverse().map(item => `
-          <tr class="hover:bg-slate-50">
-            <td class="p-3 font-semibold">${item.date}</td>
-            <td class="p-3">${item.name}</td>
-            <td class="p-3"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono text-xs">${item.number}</span></td>
-            <td class="p-3 text-slate-600">${item.reason}</td>
-          </tr>`).join('');
-      } catch(e) { historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-rose-500">載入請假紀錄失敗</td></tr>`; }
+        
+        if (!records || records.length === 0) {
+          historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-slate-400">目前沒有任何請假紀錄</td></tr>`;
+        } else {
+          historyTableBody.innerHTML = records.reverse().map(item => `
+            <tr class="hover:bg-slate-50">
+              <td class="p-3 font-semibold text-slate-800">${item.date}</td>
+              <td class="p-3 text-slate-700">${item.name}</td>
+              <td class="p-3"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono text-xs font-bold border border-indigo-100">${item.number}</span></td>
+              <td class="p-3 text-slate-600">${item.reason}</td>
+            </tr>`).join('');
+        }
+      } catch(e) { 
+        historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-rose-500 font-bold">❌ 讀取請假紀錄失敗。</td></tr>`; 
+      }
 
-      // 2. 讀取日期設定
+      // 2. 讀取訓練日期
       try {
         const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDates`);
         const dates = await res.json();
-        dateListBody.innerHTML = dates.map(d => `
-          <tr class="hover:bg-slate-50">
-            <td class="p-3 font-semibold">${d.date}</td>
-            <td class="p-3">${d.time}</td>
-            <td class="p-3 text-center"><button onclick="deleteDate('${d.date}')" class="text-rose-600 bg-rose-50 px-2 py-1 rounded border border-rose-200 text-xs">刪除</button></td>
-          </tr>`).join('');
-      } catch(e) { dateListBody.innerHTML = `<tr><td colSpan="3" class="p-4 text-center text-rose-500">載入日期失敗</td></tr>`; }
+        
+        if (!dates || dates.length === 0) {
+          dateListBody.innerHTML = `<tr><td colSpan="3" class="p-4 text-center text-slate-400">尚未設定任何訓練日期</td></tr>`;
+        } else {
+          dateListBody.innerHTML = dates.map(d => `
+            <tr class="hover:bg-slate-50">
+              <td class="p-3 font-semibold text-slate-800">${d.date}</td>
+              <td class="p-3 text-slate-600">${d.time}</td>
+              <td class="p-3 text-center"><button onclick="deleteDate('${d.date}')" class="text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white px-2 py-1 rounded border border-rose-200 text-xs font-bold transition-all">刪除</button></td>
+            </tr>`).join('');
+        }
+      } catch(e) { 
+        dateListBody.innerHTML = `<tr><td colSpan="3" class="p-4 text-center text-rose-500 font-bold">❌ 載入日期失敗</td></tr>`; 
+      }
     }
 
-    document.getElementById('addDateBtn').addEventListener('click', async () => {
+    addDateBtn.addEventListener('click', async () => {
       const date = document.getElementById('newDateInput').value;
       const time = document.getElementById('newTimeInput').value.trim();
       if(!date || !time) return alert('請填妥日期與時間！');
 
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'addDate', date, time })
-      });
-      loadAdminData();
+      addDateBtn.disabled = true;
+      addDateBtn.innerText = '儲存中...';
+
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' }, 
+          body: JSON.stringify({ action: 'addDate', date, time })
+        });
+        
+        const result = await response.json();
+        if (result.status === 'success') {
+          document.getElementById('newDateInput').value = '';
+          loadAdminData();
+        } else {
+          alert('雲端儲存失敗！');
+        }
+      } catch (error) {
+        alert('連線失敗，請確保 Google Apps Script 已成功發佈並設定「所有人」皆可存取。');
+      } finally {
+        addDateBtn.disabled = false;
+        addDateBtn.innerText = '➕ 新增日期';
+      }
     });
 
     window.deleteDate = async function(date) {
-      if(!confirm('確定刪除此日期？')) return;
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'deleteDate', date })
-      });
-      loadAdminData();
+      if(!confirm(`確定要刪除 ${date} 的訓練日期嗎？（這將會連同 Google 試算表的分頁和數據一併徹底移除！）`)) return;
+      
+      try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'deleteDate', date })
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+          loadAdminData();
+        } else {
+          alert('雲端刪除失敗！');
+        }
+      } catch (error) {
+        alert('刪除失敗，請檢查網路連線。');
+      }
     };
 
     document.getElementById('importBtn').addEventListener('click', loadAdminData);
