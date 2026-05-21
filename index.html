@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CD4 請假系統後台</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen py-10 px-4 antialiased">
+
+  <div id="loginWall" class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-200 mt-20 text-center">
+    <h2 class="text-xl font-bold text-slate-800 mb-4">🔐 進入 CD4 管理員後台</h2>
+    <input type="password" id="adminPassword" placeholder="輸入管理員密碼" class="w-full p-3 border border-slate-300 rounded-xl mb-4 text-center outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+    <button id="loginBtn" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition">驗證並登入</button>
+  </div>
+  
+  <div id="adminDashboard" class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 border border-slate-200 hidden">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-slate-100 pb-4">
+      <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">📋 CD4 雲端請假紀錄中央後台</h2>
+      <button id="importBtn" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-sm">🔄 重新整理雲端數據</button>
+    </div>
+
+    <div class="mb-8 border-b border-slate-100 pb-6">
+      <h3 class="text-base font-bold text-slate-700 mb-3">📅 管理訓練日期</h3>
+      <div class="flex flex-col md:flex-row gap-2 mb-4 bg-slate-50 p-3 rounded-xl">
+        <input type="date" id="newDateInput" class="p-2 border border-slate-300 rounded-lg flex-1 text-sm bg-white">
+        <input type="text" id="newTimeInput" value="15:00-18:00" class="p-2 border border-slate-300 rounded-lg flex-1 text-sm bg-white">
+        <button id="addDateBtn" class="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-semibold">➕ 新增日期</button>
+      </div>
+      
+      <div class="overflow-x-auto border border-slate-200 rounded-xl">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200"><th class="p-3">已設定日期</th><th class="p-3">時間</th><th class="p-3 text-center w-24">操作</th></tr>
+          </thead>
+          <tbody id="dateListBody" class="divide-y divide-slate-100 bg-white"></tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div>
+      <h3 class="text-base font-bold text-slate-700 mb-3">☁️ 雲端請假紀錄</h3>
+      <div class="overflow-x-auto border border-slate-200 rounded-xl">
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200"><th class="p-3">訓練日期</th><th class="p-3">姓名</th><th class="p-3">民安隊編號</th><th class="p-3">請假原因</th></tr>
+          </thead>
+          <tbody id="historyTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 已更新為您提供的新 Google 雲端網址
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyIKIESS61AvND8YYXCOJ1rBQTw7ucsiQTgNi7NKUS7ZG5Gj4WBrQ2OeCL2_UgOrLRW/exec';
+    
+    // 後台管理員登入密碼
+    const MASTER_PASSWORD = '123456789'; 
+
+    const loginWall = document.getElementById('loginWall');
+    const adminDashboard = document.getElementById('adminDashboard');
+    const historyTableBody = document.getElementById('historyTableBody');
+    const dateListBody = document.getElementById('dateListBody');
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      if (document.getElementById('adminPassword').value === MASTER_PASSWORD) {
+        loginWall.classList.add('hidden');
+        adminDashboard.classList.remove('hidden');
+        loadAdminData();
+      } else {
+        alert('密碼錯誤！');
+      }
+    });
+
+    async function loadAdminData() {
+      // 1. 讀取請假紀錄
+      historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-indigo-600 animate-pulse">載入雲端數據中...</td></tr>`;
+      try {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeaves`);
+        const records = await res.json();
+        historyTableBody.innerHTML = records.reverse().map(item => `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-semibold">${item.date}</td>
+            <td class="p-3">${item.name}</td>
+            <td class="p-3"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono text-xs">${item.number}</span></td>
+            <td class="p-3 text-slate-600">${item.reason}</td>
+          </tr>`).join('');
+      } catch(e) { historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-rose-500">載入請假紀錄失敗</td></tr>`; }
+
+      // 2. 讀取日期設定
+      try {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDates`);
+        const dates = await res.json();
+        dateListBody.innerHTML = dates.map(d => `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-semibold">${d.date}</td>
+            <td class="p-3">${d.time}</td>
+            <td class="p-3 text-center"><button onclick="deleteDate('${d.date}')" class="text-rose-600 bg-rose-50 px-2 py-1 rounded border border-rose-200 text-xs">刪除</button></td>
+          </tr>`).join('');
+      } catch(e) { dateListBody.innerHTML = `<tr><td colSpan="3" class="p-4 text-center text-rose-500">載入日期失敗</td></tr>`; }
+    }
+
+    document.getElementById('addDateBtn').addEventListener('click', async () => {
+      const date = document.getElementById('newDateInput').value;
+      const time = document.getElementById('newTimeInput').value.trim();
+      if(!date || !time) return alert('請填妥日期與時間！');
+
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'addDate', date, time })
+      });
+      loadAdminData();
+    });
+
+    window.deleteDate = async function(date) {
+      if(!confirm('確定刪除此日期？')) return;
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'deleteDate', date })
+      });
+      loadAdminData();
+    };
+
+    document.getElementById('importBtn').addEventListener('click', loadAdminData);
+  </script>
+</body>
+</html>
