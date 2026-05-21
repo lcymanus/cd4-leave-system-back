@@ -60,7 +60,6 @@
   </div>
 
   <script>
-    // Google Apps Script 後端網址
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLaF-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
     
     const monthSelect = document.getElementById('monthSelect');
@@ -70,7 +69,6 @@
 
     let allFetchedDates = []; 
 
-    // 載入網頁初始化
     async function initPage() {
       if (localStorage.getItem('casName')) document.getElementById('chineseName').value = localStorage.getItem('casName');
       if (localStorage.getItem('casSubUnit')) subUnitSelect.value = localStorage.getItem('casSubUnit');
@@ -85,7 +83,6 @@
           return;
         }
 
-        // 提取不重複月份 (YYYY-MM)
         const months = [...new Set(allFetchedDates.map(d => d.date.substring(0, 7)))].sort().reverse();
         
         monthSelect.innerHTML = '<option value="" disabled selected>-- 請選擇月份 --</option>';
@@ -102,7 +99,6 @@
       }
     }
 
-    // 動態根據選擇的月份渲染恆常訓練日子
     monthSelect.addEventListener('change', function() {
       const selectedMonth = this.value;
       const filtered = allFetchedDates.filter(d => d.date.startsWith(selectedMonth)).sort((a,b) => a.date.localeCompare(b.date));
@@ -134,12 +130,7 @@
             </div>
           </div>
           <div id="reason_container_${index}" class="hidden pt-1 border-t border-dashed border-slate-200">
-            <select id="reason_${index}" class="w-full p-2 border border-rose-200 rounded-md outline-none bg-white text-xs font-medium text-slate-700 focus:border-rose-400">
-              <option value="返工">原因：返工</option>
-              <option value="病假">原因：病假 (請後補醫生紙)</option>
-              <option value="返學/考試">原因：返學 / 考試</option>
-              <option value="其他">原因：其他突發私事</option>
-            </select>
+            <input type="text" id="reason_${index}" placeholder="請手動輸入請假原因 (例如：返工 / 公司OT / 考試)" class="w-full p-2.5 border border-rose-200 rounded-lg outline-none bg-white text-xs font-medium text-slate-700 focus:border-rose-400 focus:ring-2 focus:ring-rose-50 shadow-sm">
           </div>
           <input type="hidden" id="raw_date_${index}" value="${fullDateStr}">
         `;
@@ -147,45 +138,41 @@
       });
     });
 
-    // 切換 出席/請假 狀態時的 UI 視覺處理
     window.toggleReasonField = function(index, status) {
       const attendLabel = document.getElementById(`label_attend_${index}`);
       const leaveLabel = document.getElementById(`label_leave_${index}`);
       const reasonContainer = document.getElementById(`reason_container_${index}`);
-      const reasonSelect = document.getElementById(`reason_${index}`);
+      const reasonInput = document.getElementById(`reason_${index}`);
 
       if(status === 'attend') {
         attendLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all bg-emerald-600 text-white shadow-sm";
         leaveLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all text-slate-600";
         reasonContainer.classList.add('hidden');
-        reasonSelect.required = false;
+        reasonInput.required = false;
+        reasonInput.value = ''; // 清空內容
       } else {
         attendLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all text-slate-600";
         leaveLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all bg-rose-600 text-white shadow-sm";
         reasonContainer.classList.remove('hidden');
-        reasonSelect.required = true;
+        reasonInput.required = true;
       }
     }
 
-    // 處理提交
     document.getElementById('rosterForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
       submitBtn.disabled = true;
-      submitBtn.innerText = '🚀 正在啟動運算...';
+      submitBtn.innerText = '🚀 正在處理全月意向...';
 
       const name = document.getElementById('chineseName').value;
       const subUnit = subUnitSelect.value;
       const number = document.getElementById('casNumber').value.toUpperCase();
 
-      // 本地儲存記憶
       localStorage.setItem('casName', name);
       localStorage.setItem('casSubUnit', subUnit);
       localStorage.setItem('casNumber', number);
 
       const monthText = monthSelect.options[monthSelect.selectedIndex].text;
-      
-      // 構建 WhatsApp 格式化訊息
       let message = `📋 *CD4 隊長月度出席申報*\n\n👤 姓名：${name}\n🗂️ 組群：${subUnit}\n🔢 編號：${number}\n📅 申報月份：${monthText}\n\n━━━━━━━━━━━━━━━\n`;
 
       const cards = datesContainer.children;
@@ -196,10 +183,9 @@
         if (status === 'attend') {
           message += `📅 ${fullDate.split(' ')[0]}：🟢 會出席\n`;
         } else {
-          const reason = document.getElementById(`reason_${i}`).value;
+          const reason = document.getElementById(`reason_${i}`).value.trim();
           message += `📅 ${fullDate.split(' ')[0]}：🔴 請假 (${reason})\n`;
 
-          // ⚡ 背景網絡續傳：將請假日子拆分，異步發送到 Google 表格
           fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -211,10 +197,7 @@
       }
 
       message += `━━━━━━━━━━━━━━━\n\n長官，以上係我今個月嘅出席意向總結，唔該晒！`;
-      
       const whatsappUrl = `https://wa.me/85268476367?text=${encodeURIComponent(message)}`;
-
-      // ⚡ 零秒等待，即時調用跳轉
       window.location.href = whatsappUrl;
     });
 
