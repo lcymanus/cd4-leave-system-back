@@ -50,8 +50,8 @@
   </div>
 
   <script>
-    // 你的 Google Apps Script 網址
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLa-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
+    // ✅ 這裡已修正為帶有 "F" 的 100% 正確網址
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLaF-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
 
     // 抓取雲端日期
     async function fetchDates() {
@@ -76,7 +76,7 @@
         
         dates.forEach(d => {
           const row = document.createElement('div');
-          row.className = "grid grid-cols-3 items-center text-sm font-medium text-slate-700 p-2.5 bg-slate-50 rounded-lg border border-slate-200/50 animate-fade-in";
+          row.className = "grid grid-cols-3 items-center text-sm font-medium text-slate-700 p-2.5 bg-slate-50 rounded-lg border border-slate-200/50";
           row.innerHTML = `
             <span class="font-mono font-bold text-xs text-slate-800">${d.date}</span>
             <span class="text-xs text-slate-500 text-center">${d.time || '15:00-18:00'}</span>
@@ -120,7 +120,6 @@
           })
         });
         
-        // 背景異步射入需要少許緩衝，1秒後刷新列表
         setTimeout(() => {
           dateInput.value = '';
           fetchDates();
