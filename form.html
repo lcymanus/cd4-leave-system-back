@@ -60,6 +60,7 @@
   </div>
 
   <script>
+    // 確保使用帶有 F 的正確後端 URL
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLaF-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
     
     const monthSelect = document.getElementById('monthSelect');
@@ -130,7 +131,7 @@
             </div>
           </div>
           <div id="reason_container_${index}" class="hidden pt-1 border-t border-dashed border-slate-200">
-            <input type="text" id="reason_${index}" placeholder="請手動輸入請假原因 (例如：返工 / 公司OT / 考試)" class="w-full p-2.5 border border-rose-200 rounded-lg outline-none bg-white text-xs font-medium text-slate-700 focus:border-rose-400 focus:ring-2 focus:ring-rose-50 shadow-sm">
+            <input type="text" id="reason_${index}" placeholder="請手動輸入請假原因 (例如：返學 / 考試 / 其他)" class="w-full p-2.5 border border-rose-200 rounded-lg outline-none bg-white text-xs font-medium text-slate-700 focus:border-rose-400 focus:ring-2 focus:ring-rose-50 shadow-sm">
           </div>
           <input type="hidden" id="raw_date_${index}" value="${fullDateStr}">
         `;
@@ -149,7 +150,7 @@
         leaveLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all text-slate-600";
         reasonContainer.classList.add('hidden');
         reasonInput.required = false;
-        reasonInput.value = ''; // 清空內容
+        reasonInput.value = ''; 
       } else {
         attendLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all text-slate-600";
         leaveLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all bg-rose-600 text-white shadow-sm";
