@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CD4 隊長月度出席申報</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-100 via-slate-50 to-indigo-50/40 min-h-screen py-10 px-4 antialiased">
+  
+  <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden mb-8 mt-6 border border-slate-100">
+    <div class="bg-gradient-to-r from-blue-900 via-indigo-950 to-blue-900 p-6 text-white text-center relative overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent"></div>
+      <h1 class="text-2xl font-bold tracking-wide relative z-10">CD4 隊長月度出席申報</h1>
+      <p class="text-xs mt-2 opacity-75 tracking-wider font-light relative z-10">更表申報通道 · 快速統計全月恆常訓練</p>
+    </div>
+
+    <form id="rosterForm" class="p-6 space-y-5 bg-white">
+      <div>
+        <label class="block font-bold text-slate-700 mb-1.5 text-sm tracking-wide">1. 中文姓名 *</label>
+        <input type="text" id="chineseName" placeholder="例如：陳大文" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all text-slate-800 font-medium shadow-sm">
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-700 mb-1.5 text-sm tracking-wide">2. 分隊組群 *</label>
+        <select id="subUnit" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none bg-white transition-all text-slate-800 font-medium shadow-sm cursor-pointer">
+          <option value="" disabled selected>-- 請選擇分隊組群 --</option>
+          <option value="CD41">CD41</option>
+          <option value="CD42">CD42</option>
+          <option value="CD43">CD43</option>
+          <option value="CD44">CD44</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-700 mb-1.5 text-sm tracking-wide">3. 民安隊編號 *</label>
+        <input type="text" id="casNumber" pattern="[A-Za-z]\d{4}" title="請輸入1個英文字母加4個數字，例如 E3308" placeholder="例如：E3308" required oninput="this.value = this.value.toUpperCase()" class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none uppercase transition-all text-slate-800 font-mono font-bold tracking-wider shadow-sm">
+      </div>
+
+      <hr class="border-slate-100 my-4">
+
+      <div>
+        <label class="block font-bold text-slate-700 mb-1.5 text-sm tracking-wide">4. 選擇申報月份 *</label>
+        <select id="monthSelect" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none bg-white transition-all text-slate-800 font-bold shadow-sm cursor-pointer">
+          <option value="" disabled selected>正在連線雲端載入月份...</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-bold text-slate-700 mb-2 text-sm tracking-wide">5. 設定各日出席意向 *</label>
+        <div id="datesContainer" class="space-y-4">
+          <p class="text-sm text-slate-400 italic">請先選擇上方申報月份</p>
+        </div>
+      </div>
+
+      <button type="submit" id="submitBtn" class="w-full mt-6 bg-indigo-600 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-indigo-700 active:scale-[0.99] transition-all flex justify-center items-center gap-2 shadow-lg shadow-indigo-600/20 text-base tracking-wide">
+        提交全月意向並開啟 WhatsApp
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Google Apps Script 後端網址
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLaF-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
+    
+    const monthSelect = document.getElementById('monthSelect');
+    const datesContainer = document.getElementById('datesContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const subUnitSelect = document.getElementById('subUnit');
+
+    let allFetchedDates = []; 
+
+    // 載入網頁初始化
+    async function initPage() {
+      if (localStorage.getItem('casName')) document.getElementById('chineseName').value = localStorage.getItem('casName');
+      if (localStorage.getItem('casSubUnit')) subUnitSelect.value = localStorage.getItem('casSubUnit');
+      if (localStorage.getItem('casNumber')) document.getElementById('casNumber').value = localStorage.getItem('casNumber');
+
+      try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDates`);
+        allFetchedDates = await response.json();
+        
+        if (!allFetchedDates || allFetchedDates.length === 0) {
+          monthSelect.innerHTML = '<option disabled selected>暫時沒有恆常訓練可供申報</option>';
+          return;
+        }
+
+        // 提取不重複月份 (YYYY-MM)
+        const months = [...new Set(allFetchedDates.map(d => d.date.substring(0, 7)))].sort().reverse();
+        
+        monthSelect.innerHTML = '<option value="" disabled selected>-- 請選擇月份 --</option>';
+        months.forEach(m => {
+          const option = document.createElement('option');
+          option.value = m;
+          const parts = m.split('-');
+          option.textContent = `${parts[0]}年 ${parts[1]}月`;
+          monthSelect.appendChild(option);
+        });
+
+      } catch (e) {
+        monthSelect.innerHTML = '<option disabled selected>無法連線雲端，請聯絡管理員</option>';
+      }
+    }
+
+    // 動態根據選擇的月份渲染恆常訓練日子
+    monthSelect.addEventListener('change', function() {
+      const selectedMonth = this.value;
+      const filtered = allFetchedDates.filter(d => d.date.startsWith(selectedMonth)).sort((a,b) => a.date.localeCompare(b.date));
+      
+      datesContainer.innerHTML = '';
+      
+      if(filtered.length === 0) {
+        datesContainer.innerHTML = '<p class="text-sm text-rose-500 font-medium">該月份沒有建立任何恆常訓練日子。</p>';
+        return;
+      }
+
+      filtered.forEach((d, index) => {
+        const fullDateStr = `${d.date} (${d.time})`;
+        
+        const dateCard = document.createElement('div');
+        dateCard.className = "p-3.5 bg-slate-50 rounded-xl border border-slate-200/60 space-y-3 transition-all";
+        dateCard.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-bold text-slate-800 text-sm tracking-wide block">📅 ${fullDateStr}</span>
+            <div class="flex bg-slate-200/70 p-0.5 rounded-lg border border-slate-300/30">
+              <label class="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all bg-emerald-600 text-white shadow-sm" id="label_attend_${index}">
+                <input type="radio" name="status_${index}" value="attend" checked class="hidden" onchange="toggleReasonField(${index}, 'attend')">
+                會出席
+              </label>
+              <label class="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all text-slate-600" id="label_leave_${index}">
+                <input type="radio" name="status_${index}" value="leave" class="hidden" onchange="toggleReasonField(${index}, 'leave')">
+                需請假
+              </label>
+            </div>
+          </div>
+          <div id="reason_container_${index}" class="hidden pt-1 border-t border-dashed border-slate-200">
+            <select id="reason_${index}" class="w-full p-2 border border-rose-200 rounded-md outline-none bg-white text-xs font-medium text-slate-700 focus:border-rose-400">
+              <option value="返工">原因：返工</option>
+              <option value="病假">原因：病假 (請後補醫生紙)</option>
+              <option value="返學/考試">原因：返學 / 考試</option>
+              <option value="其他">原因：其他突發私事</option>
+            </select>
+          </div>
+          <input type="hidden" id="raw_date_${index}" value="${fullDateStr}">
+        `;
+        datesContainer.appendChild(dateCard);
+      });
+    });
+
+    // 切換 出席/請假 狀態時的 UI 視覺處理
+    window.toggleReasonField = function(index, status) {
+      const attendLabel = document.getElementById(`label_attend_${index}`);
+      const leaveLabel = document.getElementById(`label_leave_${index}`);
+      const reasonContainer = document.getElementById(`reason_container_${index}`);
+      const reasonSelect = document.getElementById(`reason_${index}`);
+
+      if(status === 'attend') {
+        attendLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all bg-emerald-600 text-white shadow-sm";
+        leaveLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all text-slate-600";
+        reasonContainer.classList.add('hidden');
+        reasonSelect.required = false;
+      } else {
+        attendLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all text-slate-600";
+        leaveLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer transition-all bg-rose-600 text-white shadow-sm";
+        reasonContainer.classList.remove('hidden');
+        reasonSelect.required = true;
+      }
+    }
+
+    // 處理提交
+    document.getElementById('rosterForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      submitBtn.disabled = true;
+      submitBtn.innerText = '🚀 正在啟動運算...';
+
+      const name = document.getElementById('chineseName').value;
+      const subUnit = subUnitSelect.value;
+      const number = document.getElementById('casNumber').value.toUpperCase();
+
+      // 本地儲存記憶
+      localStorage.setItem('casName', name);
+      localStorage.setItem('casSubUnit', subUnit);
+      localStorage.setItem('casNumber', number);
+
+      const monthText = monthSelect.options[monthSelect.selectedIndex].text;
+      
+      // 構建 WhatsApp 格式化訊息
+      let message = `📋 *CD4 隊長月度出席申報*\n\n👤 姓名：${name}\n🗂️ 組群：${subUnit}\n🔢 編號：${number}\n📅 申報月份：${monthText}\n\n━━━━━━━━━━━━━━━\n`;
+
+      const cards = datesContainer.children;
+      for (let i = 0; i < cards.length; i++) {
+        const fullDate = document.getElementById(`raw_date_${i}`).value;
+        const status = document.querySelector(`input[name="status_${i}"]:checked`).value;
+        
+        if (status === 'attend') {
+          message += `📅 ${fullDate.split(' ')[0]}：🟢 會出席\n`;
+        } else {
+          const reason = document.getElementById(`reason_${i}`).value;
+          message += `📅 ${fullDate.split(' ')[0]}：🔴 請假 (${reason})\n`;
+
+          // ⚡ 背景網絡續傳：將請假日子拆分，異步發送到 Google 表格
+          fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            keepalive: true,
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: 'submitLeave', date: fullDate, name, subUnit, number, reason })
+          });
+        }
+      }
+
+      message += `━━━━━━━━━━━━━━━\n\n長官，以上係我今個月嘅出席意向總結，唔該晒！`;
+      
+      const whatsappUrl = `https://wa.me/85268476367?text=${encodeURIComponent(message)}`;
+
+      // ⚡ 零秒等待，即時調用跳轉
+      window.location.href = whatsappUrl;
+    });
+
+    window.addEventListener('DOMContentLoaded', initPage);
+  </script>
+</body>
+</html>
