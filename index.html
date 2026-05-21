@@ -2,161 +2,163 @@
 <html lang="zh-HK">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CD4 請假系統後台</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CD4 雲端請假紀錄中央後台</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 min-h-screen py-10 px-4 antialiased">
-
-  <div id="loginWall" class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-xl border border-slate-200 mt-20 text-center">
-    <h2 class="text-xl font-bold text-slate-800 mb-4">🔐 進入 CD4 管理員後台</h2>
-    <input type="password" id="adminPassword" placeholder="輸入管理員密碼" class="w-full p-3 border border-slate-300 rounded-xl mb-4 text-center outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
-    <button id="loginBtn" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition">驗證並登入</button>
-  </div>
+<body class="bg-gradient-to-br from-slate-100 via-slate-50 to-indigo-50/40 min-h-screen py-10 px-4 antialiased">
   
-  <div id="adminDashboard" class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 border border-slate-200 hidden">
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b border-slate-100 pb-4">
-      <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">📋 CD4 雲端請假紀錄中央後台</h2>
-      <button id="importBtn" class="bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-sm">🔄 重新整理雲端數據</button>
+  <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden mb-8 mt-6 border border-slate-100">
+    <div class="p-6 bg-white border-b border-slate-100 text-center space-y-4">
+      <h1 class="text-xl font-bold text-slate-800 flex items-center justify-center gap-2">
+        📋 CD4 雲端請假紀錄中央後台
+      </h1>
+      <button onclick="fetchDates()" id="refreshBtn" class="bg-indigo-600 text-white text-xs font-bold py-2.5 px-5 rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-600/10 flex items-center justify-center gap-1.5 mx-auto">
+        🔄 重新整理雲端數據
+      </button>
     </div>
 
-    <div class="mb-8 border-b border-slate-100 pb-6">
-      <h3 class="text-base font-bold text-slate-700 mb-3">📅 管理訓練日期</h3>
-      <div class="flex flex-col md:flex-row gap-2 mb-4 bg-slate-50 p-3 rounded-xl">
-        <input type="date" id="newDateInput" class="p-2 border border-slate-300 rounded-lg flex-1 text-sm bg-white">
-        <input type="text" id="newTimeInput" value="15:00-18:00" class="p-2 border border-slate-300 rounded-lg flex-1 text-sm bg-white">
-        <button id="addDateBtn" class="bg-slate-800 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all">➕ 新增日期</button>
+    <div class="p-6 space-y-6">
+      <div class="space-y-4">
+        <h2 class="font-bold text-slate-700 text-sm tracking-wide flex items-center gap-1.5">
+          📅 管理訓練日期
+        </h2>
+        
+        <div class="space-y-3">
+          <input type="date" id="trainingDate" class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none text-slate-800 font-medium shadow-sm">
+          <input type="text" id="trainingTime" value="15:00-18:00" placeholder="例如：15:00-18:00" class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none text-slate-800 font-medium shadow-sm">
+          <button onclick="addDate()" id="addBtn" class="w-full bg-slate-800 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-slate-900 transition-all shadow-sm text-sm">
+            ➕ 新增日期
+          </button>
+        </div>
       </div>
-      
-      <div class="overflow-x-auto border border-slate-200 rounded-xl">
-        <table class="w-full text-left text-sm">
-          <thead>
-            <tr class="bg-slate-50 border-b border-slate-200"><th class="p-3">已設定日期</th><th class="p-3">時間</th><th class="p-3 text-center w-24">操作</th></tr>
-          </thead>
-          <tbody id="dateListBody" class="divide-y divide-slate-100 bg-white"></tbody>
-        </table>
-      </div>
-    </div>
-    
-    <div>
-      <h3 class="text-base font-bold text-slate-700 mb-3">☁️ 雲端請假紀錄</h3>
-      <div class="overflow-x-auto border border-slate-200 rounded-xl">
-        <table class="w-full text-left text-sm">
-          <thead>
-            <tr class="bg-slate-50 border-b border-slate-200"><th class="p-3">訓練日期</th><th class="p-3">姓名</th><th class="p-3">民安隊編號</th><th class="p-3">請假原因</th></tr>
-          </thead>
-          <tbody id="historyTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
-        </table>
+
+      <hr class="border-slate-100">
+
+      <div class="space-y-3">
+        <div class="grid grid-cols-3 text-xs font-bold text-slate-400 pb-1 px-1">
+          <span>已設定日期</span>
+          <span class="text-center">時間</span>
+          <span class="text-right">操作</span>
+        </div>
+        
+        <div id="datesList" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+          <p class="text-xs text-slate-400 italic text-center py-4">正在讀取雲端日子...</p>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    // 🔗 完美連線至您的 Google Apps Script 網址
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLaF-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
-    const MASTER_PASSWORD = '123456789'; 
+    // 你的 Google Apps Script 網址
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLa-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
 
-    const loginWall = document.getElementById('loginWall');
-    const adminDashboard = document.getElementById('adminDashboard');
-    const historyTableBody = document.getElementById('historyTableBody');
-    const dateListBody = document.getElementById('dateListBody');
-    const addDateBtn = document.getElementById('addDateBtn');
-
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      if (document.getElementById('adminPassword').value === MASTER_PASSWORD) {
-        loginWall.classList.add('hidden');
-        adminDashboard.classList.remove('hidden');
-        loadAdminData();
-      } else {
-        alert('密碼錯誤！');
-      }
-    });
-
-    async function loadAdminData() {
-      historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-indigo-600">正在同步更新 Google 雲端數據...</td></tr>`;
-      dateListBody.innerHTML = `<tr><td colSpan="3" class="p-4 text-center text-indigo-600">載入中...</td></tr>`;
+    // 抓取雲端日期
+    async function fetchDates() {
+      const refreshBtn = document.getElementById('refreshBtn');
+      const datesList = document.getElementById('datesList');
       
-      // 1. 讀取請假紀錄 (GET)
+      refreshBtn.disabled = true;
+      refreshBtn.innerText = '⚡ 正在同步...';
+      
       try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getLeaves`);
-        const records = await res.json();
-        if (!records || records.length === 0) {
-          historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-slate-400">目前各分頁沒有任何請假紀錄</td></tr>`;
-        } else {
-          historyTableBody.innerHTML = records.reverse().map(item => `
-            <tr class="hover:bg-slate-50">
-              <td class="p-3 font-semibold text-slate-800">${item.date}</td>
-              <td class="p-3 text-slate-700">${item.name}</td>
-              <td class="p-3"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-mono text-xs font-bold border border-indigo-100">${item.number}</span></td>
-              <td class="p-3 text-slate-600">${item.reason}</td>
-            </tr>`).join('');
-        }
-      } catch(e) { 
-        historyTableBody.innerHTML = `<tr><td colSpan="4" class="p-4 text-center text-slate-400">暫無數據或分頁為空</td></tr>`; 
-      }
-
-      // 2. 讀取訓練日期 (GET)
-      try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDates`);
-        const dates = await res.json();
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getDates`);
+        const dates = await response.json();
+        
+        datesList.innerHTML = '';
         if (!dates || dates.length === 0) {
-          dateListBody.innerHTML = `<tr><td colSpan="3" class="p-4 text-center text-slate-400">尚未設定任何訓練日期</td></tr>`;
-        } else {
-          dateListBody.innerHTML = dates.map(d => `
-            <tr class="hover:bg-slate-50">
-              <td class="p-3 font-semibold text-slate-800">${d.date}</td>
-              <td class="p-3 text-slate-600">${d.time}</td>
-              <td class="p-3 text-center"><button onclick="deleteDate('${d.date}')" class="text-rose-600 bg-rose-50 hover:bg-rose-600 hover:text-white px-2 py-1 rounded border border-rose-200 text-xs font-bold transition-all">刪除</button></td>
-            </tr>`).join('');
+          datesList.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-4">尚未設定任何訓練日期</p>';
+          return;
         }
-      } catch(e) { 
-        dateListBody.innerHTML = `<tr><td colSpan="3" class="p-4 text-center text-rose-500 font-bold">❌ 載入日期失敗</td></tr>`; 
+        
+        // 排序：新日子排前頭
+        dates.sort((a, b) => b.date.localeCompare(a.date));
+        
+        dates.forEach(d => {
+          const row = document.createElement('div');
+          row.className = "grid grid-cols-3 items-center text-sm font-medium text-slate-700 p-2.5 bg-slate-50 rounded-lg border border-slate-200/50 animate-fade-in";
+          row.innerHTML = `
+            <span class="font-mono font-bold text-xs text-slate-800">${d.date}</span>
+            <span class="text-xs text-slate-500 text-center">${d.time || '15:00-18:00'}</span>
+            <div class="text-right">
+              <button onclick="deleteDate('${d.date}')" class="text-xs bg-rose-50 text-rose-600 font-bold px-2 py-1 rounded hover:bg-rose-100 transition-all border border-rose-100">刪除</button>
+            </div>
+          `;
+          datesList.appendChild(row);
+        });
+      } catch (e) {
+        alert('連線失敗，請確保 Google Apps Script 已成功發佈並設定「所有人」皆可存取。');
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.innerText = '🔄 重新整理雲端數據';
       }
     }
 
-    // ➕ 新增日期邏輯 (優化版：全面免疫 iPad Safari CORS 攔截)
-    addDateBtn.addEventListener('click', () => {
-      const date = document.getElementById('newDateInput').value;
-      const time = document.getElementById('newTimeInput').value.trim();
-      if(!date || !time) return alert('請填妥日期與時間！');
-
-      addDateBtn.disabled = true;
-      addDateBtn.innerText = '正在寫入雲端...';
-
-      // 盲發模式：直接射過去，無視 Safari 的 302 阻擋
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: 'addDate', date, time })
-      });
+    // 新增日期邏輯
+    async function addDate() {
+      const dateInput = document.getElementById('trainingDate');
+      const timeInput = document.getElementById('trainingTime');
+      const addBtn = document.getElementById('addBtn');
       
-      // 倒數 1.5 秒等候 Google 完成背景作業，然後直接強制刷新重載數據
-      setTimeout(() => {
-        document.getElementById('newDateInput').value = '';
-        addDateBtn.disabled = false;
-        addDateBtn.innerText = '➕ 新增日期';
-        loadAdminData();
-      }, 1500);
-    });
-
-    // 🗑️ 刪除日期邏輯 (優化版)
-    window.deleteDate = function(date) {
-      if(!confirm(`確定要刪除 ${date} 嗎？\n(這將會連同 Google 試算表對應分頁及請假數據一併徹底抹除！)`)) return;
+      if (!dateInput.value) {
+        alert('請先選擇日期！');
+        return;
+      }
       
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: 'deleteDate', date })
-      });
+      addBtn.disabled = true;
+      addBtn.innerText = '儲存中...';
+      
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            action: 'addDate',
+            date: dateInput.value,
+            time: timeInput.value
+          })
+        });
+        
+        // 背景異步射入需要少許緩衝，1秒後刷新列表
+        setTimeout(() => {
+          dateInput.value = '';
+          fetchDates();
+          addBtn.disabled = false;
+          addBtn.innerText = '➕ 新增日期';
+        }, 1000);
+      } catch(e) {
+        alert('新增失敗，請重試');
+        addBtn.disabled = false;
+        addBtn.innerText = '➕ 新增日期';
+      }
+    }
 
-      setTimeout(() => {
-        loadAdminData();
-      }, 1500);
-    };
+    // 刪除日期邏輯
+    async function deleteDate(dateStr) {
+      if (!confirm(`確定要刪除 ${dateStr} 嘅訓練日子同埋對應嘅請假分頁嗎？\n(注意：此操作不可復原)`)) return;
+      
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            action: 'deleteDate',
+            date: dateStr
+          })
+        });
+        
+        setTimeout(() => {
+          fetchDates();
+        }, 1000);
+      } catch(e) {
+        alert('刪除失敗');
+      }
+    }
 
-    document.getElementById('importBtn').addEventListener('click', loadAdminData);
+    // 網頁開啟自動載入
+    window.addEventListener('DOMContentLoaded', fetchDates);
   </script>
 </body>
 </html>
