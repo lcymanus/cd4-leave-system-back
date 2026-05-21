@@ -54,13 +54,12 @@
       </div>
 
       <button type="submit" id="submitBtn" class="w-full mt-6 bg-indigo-600 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-indigo-700 active:scale-[0.99] transition-all flex justify-center items-center gap-2 shadow-lg shadow-indigo-600/20 text-base tracking-wide">
-        提交全月意向並開啟 WhatsApp
+        確認並提交全月意向
       </button>
     </form>
   </div>
 
   <script>
-    // 確保使用帶有 F 的正確後端 URL
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2pbjpqpWN0StsLaF-1r8vIgs5CHmkfunzJTNfl4iOb_0YPETYXFgmxMzRmKuXWgHQXQ/exec';
     
     const monthSelect = document.getElementById('monthSelect');
@@ -159,11 +158,11 @@
       }
     }
 
-    document.getElementById('rosterForm').addEventListener('submit', function(e) {
+    document.getElementById('rosterForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
       submitBtn.disabled = true;
-      submitBtn.innerText = '🚀 正在處理全月意向...';
+      submitBtn.innerText = '🚀 正在提交數據到雲端...';
 
       const name = document.getElementById('chineseName').value;
       const subUnit = subUnitSelect.value;
@@ -173,33 +172,39 @@
       localStorage.setItem('casSubUnit', subUnit);
       localStorage.setItem('casNumber', number);
 
-      const monthText = monthSelect.options[monthSelect.selectedIndex].text;
-      let message = `📋 *CD4 隊長月度出席申報*\n\n👤 姓名：${name}\n🗂️ 組群：${subUnit}\n🔢 編號：${number}\n📅 申報月份：${monthText}\n\n━━━━━━━━━━━━━━━\n`;
-
       const cards = datesContainer.children;
+      const promises = [];
+
       for (let i = 0; i < cards.length; i++) {
         const fullDate = document.getElementById(`raw_date_${i}`).value;
         const status = document.querySelector(`input[name="status_${i}"]:checked`).value;
         
-        if (status === 'attend') {
-          message += `📅 ${fullDate.split(' ')[0]}：🟢 會出席\n`;
-        } else {
+        // 如果是需請假，將發送請求任務放入隊列
+        if (status === 'leave') {
           const reason = document.getElementById(`reason_${i}`).value.trim();
-          message += `📅 ${fullDate.split(' ')[0]}：🔴 請假 (${reason})\n`;
-
-          fetch(GOOGLE_SCRIPT_URL, {
+          
+          const req = fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
             keepalive: true,
             headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify({ action: 'submitLeave', date: fullDate, name, subUnit, number, reason })
           });
+          promises.push(req);
         }
       }
 
-      message += `━━━━━━━━━━━━━━━\n\n長官，以上係我今個月嘅出席意向總結，唔該晒！`;
-      const whatsappUrl = `https://wa.me/85268476367?text=${encodeURIComponent(message)}`;
-      window.location.href = whatsappUrl;
+      // 等待所有請假數據成功發出
+      if (promises.length > 0) {
+        await Promise.all(promises);
+      }
+
+      // 提交完成直接彈出成功提示，不跳轉 WhatsApp
+      alert('🎉 申報提交成功！紀錄已安全存入雲端。');
+      
+      // 恢復按鈕狀態
+      submitBtn.disabled = false;
+      submitBtn.innerText = '確認並提交全月意向';
     });
 
     window.addEventListener('DOMContentLoaded', initPage);
