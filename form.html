@@ -3,39 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CD4 隊長月度出席申報 (Official)</title>
+  <title>CD4 隊長出席表 (Official)</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#f8fafc] min-h-screen py-10 px-4 antialiased text-slate-900">
+<body class="bg-[#f8fafc] min-h-screen py-4 px-3 antialiased text-slate-900 flex flex-col justify-center">
   
-  <div class="max-w-md mx-auto space-y-4">
+  <div class="max-w-md w-full mx-auto space-y-2">
     
-    <div class="bg-slate-900 rounded-t-xl px-8 py-10 text-center relative overflow-hidden border-b-2 border-indigo-500">
+    <div class="bg-slate-900 rounded-t-xl px-4 py-5 text-center relative overflow-hidden border-b-2 border-indigo-500">
       <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-slate-500 to-indigo-500"></div>
-      <h1 class="text-2xl font-black text-white tracking-[0.3em] uppercase">CD4 隊長申報</h1>
-      <div class="mt-2 h-px w-12 bg-indigo-500 mx-auto"></div>
-      <p class="text-[10px] mt-3 text-slate-400 font-bold tracking-[0.4em] uppercase">Attendance & Roster Declaration</p>
+      <h1 class="text-xl font-black text-white tracking-widest uppercase">CD4 隊長出席表</h1>
+      <div class="mt-1.5 h-px w-12 bg-indigo-500 mx-auto"></div>
+      <p class="text-[9px] mt-1.5 text-slate-400 font-bold tracking-widest uppercase whitespace-nowrap overflow-hidden text-ellipsis">Attendance & Roster Declaration</p>
     </div>
 
-    <div class="bg-white rounded-b-xl shadow-2xl border-x border-b border-slate-200 overflow-hidden">
-      <form id="rosterForm" class="p-8 space-y-8">
+    <div class="bg-white rounded-b-xl shadow-xl border-x border-b border-slate-200 overflow-hidden">
+      <form id="rosterForm" class="p-5 space-y-5">
         
-        <div class="space-y-6">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">PART I</span>
-            <span class="text-xs font-bold text-slate-400 tracking-widest uppercase">基本資料</span>
+        <div class="space-y-3">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">PART I</span>
+            <span class="text-[11px] font-bold text-slate-400 tracking-widest uppercase">基本資料</span>
           </div>
 
-          <div class="grid grid-cols-1 gap-5">
+          <div class="grid grid-cols-1 gap-3">
             <div>
-              <label class="block font-bold text-slate-600 mb-2 text-[11px] tracking-widest uppercase">1. 中文姓名</label>
-              <input type="text" id="chineseName" placeholder="輸入全名" required class="w-full p-3 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-bold transition-all">
+              <label class="block font-bold text-slate-600 mb-1 text-[10px] tracking-widest uppercase">1. 中文姓名</label>
+              <input type="text" id="chineseName" placeholder="輸入全名" required class="w-full p-2.5 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-bold transition-all">
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block font-bold text-slate-600 mb-2 text-[11px] tracking-widest uppercase">2. 所屬分隊</label>
-                <select id="subUnit" required class="w-full p-3 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-bold appearance-none">
+                <label class="block font-bold text-slate-600 mb-1 text-[10px] tracking-widest uppercase">2. 所屬分隊</label>
+                <select id="subUnit" required class="w-full p-2.5 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-bold appearance-none">
                   <option value="" disabled selected>選擇</option>
                   <option value="CD41">CD41</option>
                   <option value="CD42">CD42</option>
@@ -44,8 +44,8 @@
                 </select>
               </div>
               <div>
-                <label class="block font-bold text-slate-600 mb-2 text-[11px] tracking-widest uppercase">3. 隊員編號</label>
-                <input type="text" id="casNumber" pattern="[A-Za-z]\d{4}" title="例如 E3308" placeholder="EXXXX" required oninput="this.value = this.value.toUpperCase()" class="w-full p-3 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-mono font-black tracking-tighter">
+                <label class="block font-bold text-slate-600 mb-1 text-[10px] tracking-widest uppercase">3. 隊員編號</label>
+                <input type="text" id="casNumber" pattern="[A-Za-z]\d{4}" title="例如 E3308" placeholder="EXXXX" required oninput="this.value = this.value.toUpperCase()" class="w-full p-2.5 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-mono font-black tracking-tighter">
               </div>
             </div>
           </div>
@@ -53,34 +53,34 @@
 
         <div class="h-px bg-slate-100"></div>
 
-        <div class="space-y-6">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">PART II</span>
-            <span class="text-xs font-bold text-slate-400 tracking-widest uppercase">月度申報</span>
+        <div class="space-y-4">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-[9px] font-black text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">PART II</span>
+            <span class="text-[11px] font-bold text-slate-400 tracking-widest uppercase">月度申報</span>
           </div>
 
           <div>
-            <label class="block font-bold text-slate-600 mb-2 text-[11px] tracking-widest uppercase">4. 指定申報月份</label>
-            <select id="monthSelect" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded font-black text-slate-900 focus:outline-none focus:border-slate-900 appearance-none text-center tracking-widest">
+            <label class="block font-bold text-slate-600 mb-1 text-[10px] tracking-widest uppercase">4. 指定申報月份</label>
+            <select id="monthSelect" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded font-black text-slate-900 focus:outline-none focus:border-slate-900 appearance-none text-center tracking-widest">
               <option value="" disabled selected>正在擷取雲端數據...</option>
             </select>
           </div>
 
           <div>
-            <label class="block font-bold text-slate-600 mb-3 text-[11px] tracking-widest uppercase">5. 出席意向設定</label>
-            <div id="datesContainer" class="space-y-3">
-              <p class="text-xs text-slate-400 italic text-center py-4 border border-dashed border-slate-200 rounded">請先選擇上方月份</p>
+            <label class="block font-bold text-slate-600 mb-2 text-[10px] tracking-widest uppercase">5. 出席意向設定</label>
+            <div id="datesContainer" class="space-y-2">
+              <p class="text-xs text-slate-400 italic text-center py-3 border border-dashed border-slate-200 rounded">請先選擇上方月份</p>
             </div>
           </div>
         </div>
 
-        <button type="submit" id="submitBtn" class="w-full bg-slate-900 text-white font-black py-4 px-6 rounded shadow-xl hover:bg-black active:scale-[0.99] transition-all text-xs tracking-[0.3em] uppercase flex justify-center items-center">
+        <button type="submit" id="submitBtn" class="w-full mt-2 bg-slate-900 text-white font-black py-3 px-4 rounded shadow-lg hover:bg-black active:scale-[0.99] transition-all text-[11px] tracking-[0.2em] uppercase flex justify-center items-center">
           確認提交全月報告
         </button>
       </form>
     </div>
     
-    <p class="text-[9px] text-center text-slate-400 font-bold tracking-widest uppercase">Official CD4 Internal Management System</p>
+    <p class="text-[8px] text-center text-slate-400 font-bold tracking-widest uppercase pt-1">Official CD4 Internal Management System</p>
   </div>
 
   <script>
@@ -125,30 +125,30 @@
       
       datesContainer.innerHTML = '';
       if(filtered.length === 0) {
-        datesContainer.innerHTML = '<p class="text-xs text-slate-500 font-bold p-4 bg-slate-50 border border-slate-200 rounded text-center">該月份目前無訓練安排。</p>';
+        datesContainer.innerHTML = '<p class="text-[11px] text-slate-500 font-bold p-3 bg-slate-50 border border-slate-200 rounded text-center">該月份目前無訓練安排。</p>';
         return;
       }
 
       filtered.forEach((d, index) => {
         const fullDateStr = `${d.date} (${d.time})`;
         const dateCard = document.createElement('div');
-        dateCard.className = "p-4 bg-white border border-slate-200 rounded space-y-4 shadow-sm hover:border-slate-400 transition-colors";
+        dateCard.className = "p-3 bg-white border border-slate-200 rounded space-y-2 shadow-sm hover:border-slate-400 transition-colors";
         dateCard.innerHTML = `
-          <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center justify-between gap-2">
             <span class="font-bold text-slate-900 text-xs tracking-tight">${fullDateStr}</span>
-            <div class="flex bg-slate-100 p-1 rounded border border-slate-200">
-              <label class="flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-slate-800 text-white shadow-sm transition-all" id="label_attend_${index}">
+            <div class="flex bg-slate-100 p-0.5 rounded border border-slate-200">
+              <label class="flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-slate-800 text-white shadow-sm transition-all" id="label_attend_${index}">
                 <input type="radio" name="status_${index}" value="attend" checked class="hidden" onchange="toggleReasonField(${index}, 'attend')">
                 出席
               </label>
-              <label class="flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all" id="label_leave_${index}">
+              <label class="flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all" id="label_leave_${index}">
                 <input type="radio" name="status_${index}" value="leave" class="hidden" onchange="toggleReasonField(${index}, 'leave')">
                 請假
               </label>
             </div>
           </div>
-          <div id="reason_container_${index}" class="hidden pt-3 border-t border-slate-100">
-            <input type="text" id="reason_${index}" placeholder="註明原因 (如: 返工/考試)" class="w-full p-2.5 border border-slate-200 rounded outline-none bg-slate-50 text-xs font-bold text-slate-900 focus:border-slate-900 transition-all">
+          <div id="reason_container_${index}" class="hidden pt-2 border-t border-slate-100">
+            <input type="text" id="reason_${index}" placeholder="註明原因 (如: 返工/考試)" class="w-full p-2 border border-slate-200 rounded outline-none bg-slate-50 text-[11px] font-bold text-slate-900 focus:border-slate-900 transition-all">
           </div>
           <input type="hidden" id="raw_date_${index}" value="${fullDateStr}">
         `;
@@ -163,14 +163,14 @@
       const reasonInput = document.getElementById(`reason_${index}`);
 
       if(status === 'attend') {
-        attendLabel.className = "flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-slate-800 text-white shadow-sm transition-all";
-        leaveLabel.className = "flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all";
+        attendLabel.className = "flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-slate-800 text-white shadow-sm transition-all";
+        leaveLabel.className = "flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all";
         reasonContainer.classList.add('hidden');
         reasonInput.required = false;
         reasonInput.value = ''; 
       } else {
-        attendLabel.className = "flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all";
-        leaveLabel.className = "flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-rose-800 text-white shadow-sm transition-all";
+        attendLabel.className = "flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all";
+        leaveLabel.className = "flex items-center gap-1 px-3 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-rose-800 text-white shadow-sm transition-all";
         reasonContainer.classList.remove('hidden');
         reasonInput.required = true;
       }
