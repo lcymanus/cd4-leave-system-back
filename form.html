@@ -3,59 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CD4 隊長月度出席申報</title>
+  <title>CD4 隊長月度出席申報 (Official)</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-slate-100 via-slate-50 to-indigo-50/40 min-h-screen py-10 px-4 antialiased">
+<body class="bg-[#f8fafc] min-h-screen py-10 px-4 antialiased text-slate-900">
   
-  <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden mb-8 mt-6 border border-slate-100">
-    <div class="bg-gradient-to-r from-blue-900 via-indigo-950 to-blue-900 p-6 text-white text-center relative overflow-hidden">
-      <h1 class="text-2xl font-bold tracking-wide relative z-10">CD4 隊長月度出席申報</h1>
-      <p class="text-xs mt-2 opacity-75 tracking-wider font-light relative z-10">恆常訓練更表申報系統</p>
+  <div class="max-w-md mx-auto space-y-4">
+    
+    <div class="bg-slate-900 rounded-t-xl px-8 py-10 text-center relative overflow-hidden border-b-2 border-indigo-500">
+      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-slate-500 to-indigo-500"></div>
+      <h1 class="text-2xl font-black text-white tracking-[0.3em] uppercase">CD4 隊長申報</h1>
+      <div class="mt-2 h-px w-12 bg-indigo-500 mx-auto"></div>
+      <p class="text-[10px] mt-3 text-slate-400 font-bold tracking-[0.4em] uppercase">Attendance & Roster Declaration</p>
     </div>
 
-    <form id="rosterForm" class="p-6 space-y-5 bg-white">
-      <div>
-        <label class="block font-bold text-slate-700 mb-1.5 text-sm tracking-wide">1. 中文姓名 *</label>
-        <input type="text" id="chineseName" placeholder="例如：陳大文" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none text-slate-800 font-medium">
-      </div>
+    <div class="bg-white rounded-b-xl shadow-2xl border-x border-b border-slate-200 overflow-hidden">
+      <form id="rosterForm" class="p-8 space-y-8">
+        
+        <div class="space-y-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">PART I</span>
+            <span class="text-xs font-bold text-slate-400 tracking-widest uppercase">基本資料</span>
+          </div>
 
-      <div>
-        <label class="block font-bold text-slate-700 mb-1.5 text-sm tracking-wide">2. 分隊組群 *</label>
-        <select id="subUnit" required class="w-full p-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none bg-white text-slate-800 font-medium">
-          <option value="" disabled selected>-- 請選擇分隊組群 --</option>
-          <option value="CD41">CD41</option>
-          <option value="CD42">CD42</option>
-          <option value="CD43">CD43</option>
-          <option value="CD44">CD44</option>
-        </select>
-      </div>
+          <div class="grid grid-cols-1 gap-5">
+            <div>
+              <label class="block font-bold text-slate-600 mb-2 text-[11px] tracking-widest uppercase">1. 中文姓名</label>
+              <input type="text" id="chineseName" placeholder="輸入全名" required class="w-full p-3 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-bold transition-all">
+            </div>
 
-      <div>
-        <label class="block font-bold text-slate-700 mb-1.5 text-sm tracking-wide">3. 民安隊編號 *</label>
-        <input type="text" id="casNumber" pattern="[A-Za-z]\d{4}" title="請輸入1個英文字母加4個數字，例如 E3308" placeholder="例如：E3308" required oninput="this.value = this.value.toUpperCase()" class="w-full p-2.5 border border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none uppercase text-slate-800 font-mono font-bold">
-      </div>
-
-      <hr class="border-slate-100 my-4">
-
-      <div>
-        <label class="block font-bold text-slate-700 mb-1.5 text-sm tracking-wide">4. 選擇申報月份 *</label>
-        <select id="monthSelect" required class="w-full p-2.5 border border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none bg-white text-slate-800 font-bold">
-          <option value="" disabled selected>正在連線雲端載入月份...</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block font-bold text-slate-700 mb-2 text-sm tracking-wide">5. 設定各日出席意向 *</label>
-        <div id="datesContainer" class="space-y-4">
-          <p class="text-sm text-slate-400 italic">請先選擇上方申報月份</p>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block font-bold text-slate-600 mb-2 text-[11px] tracking-widest uppercase">2. 所屬分隊</label>
+                <select id="subUnit" required class="w-full p-3 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-bold appearance-none">
+                  <option value="" disabled selected>選擇</option>
+                  <option value="CD41">CD41</option>
+                  <option value="CD42">CD42</option>
+                  <option value="CD43">CD43</option>
+                  <option value="CD44">CD44</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-bold text-slate-600 mb-2 text-[11px] tracking-widest uppercase">3. 隊員編號</label>
+                <input type="text" id="casNumber" pattern="[A-Za-z]\d{4}" title="例如 E3308" placeholder="EXXXX" required oninput="this.value = this.value.toUpperCase()" class="w-full p-3 bg-white border border-slate-200 rounded focus:outline-none focus:border-slate-900 focus:ring-0 text-sm font-mono font-black tracking-tighter">
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <button type="submit" id="submitBtn" class="w-full mt-6 bg-indigo-600 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-indigo-700 transition-all shadow-lg text-base tracking-wide">
-        確認並提交全月意向
-      </button>
-    </form>
+        <div class="h-px bg-slate-100"></div>
+
+        <div class="space-y-6">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">PART II</span>
+            <span class="text-xs font-bold text-slate-400 tracking-widest uppercase">月度申報</span>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-600 mb-2 text-[11px] tracking-widest uppercase">4. 指定申報月份</label>
+            <select id="monthSelect" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded font-black text-slate-900 focus:outline-none focus:border-slate-900 appearance-none text-center tracking-widest">
+              <option value="" disabled selected>正在擷取雲端數據...</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-slate-600 mb-3 text-[11px] tracking-widest uppercase">5. 出席意向設定</label>
+            <div id="datesContainer" class="space-y-3">
+              <p class="text-xs text-slate-400 italic text-center py-4 border border-dashed border-slate-200 rounded">請先選擇上方月份</p>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-slate-900 text-white font-black py-4 px-6 rounded shadow-xl hover:bg-black active:scale-[0.99] transition-all text-xs tracking-[0.3em] uppercase flex justify-center items-center">
+          確認提交全月報告
+        </button>
+      </form>
+    </div>
+    
+    <p class="text-[9px] text-center text-slate-400 font-bold tracking-widest uppercase">Official CD4 Internal Management System</p>
   </div>
 
   <script>
@@ -76,12 +101,12 @@
         allFetchedDates = await response.json();
         
         if (!allFetchedDates || allFetchedDates.length === 0) {
-          monthSelect.innerHTML = '<option disabled selected>暫時沒有恆常訓練可供申報</option>';
+          monthSelect.innerHTML = '<option disabled selected>系統暫無可用日期</option>';
           return;
         }
 
         const months = [...new Set(allFetchedDates.map(d => d.date.substring(0, 7)))].sort().reverse();
-        monthSelect.innerHTML = '<option value="" disabled selected>-- 請選擇月份 --</option>';
+        monthSelect.innerHTML = '<option value="" disabled selected>-- 選擇月份 --</option>';
         months.forEach(m => {
           const option = document.createElement('option');
           option.value = m;
@@ -90,7 +115,7 @@
           monthSelect.appendChild(option);
         });
       } catch (e) {
-        monthSelect.innerHTML = '<option disabled selected>無法連線系統，請聯絡管理員</option>';
+        monthSelect.innerHTML = '<option disabled selected>數據庫連線失敗</option>';
       }
     }
 
@@ -100,30 +125,30 @@
       
       datesContainer.innerHTML = '';
       if(filtered.length === 0) {
-        datesContainer.innerHTML = '<p class="text-sm text-rose-500 font-medium">該月份沒有建立任何恆常訓練日期。</p>';
+        datesContainer.innerHTML = '<p class="text-xs text-slate-500 font-bold p-4 bg-slate-50 border border-slate-200 rounded text-center">該月份目前無訓練安排。</p>';
         return;
       }
 
       filtered.forEach((d, index) => {
         const fullDateStr = `${d.date} (${d.time})`;
         const dateCard = document.createElement('div');
-        dateCard.className = "p-3.5 bg-slate-50 rounded-xl border border-slate-200/60 space-y-3";
+        dateCard.className = "p-4 bg-white border border-slate-200 rounded space-y-4 shadow-sm hover:border-slate-400 transition-colors";
         dateCard.innerHTML = `
-          <div class="flex items-center justify-between gap-2">
-            <span class="font-bold text-slate-800 text-sm tracking-wide block">${fullDateStr}</span>
-            <div class="flex bg-slate-200/70 p-0.5 rounded-lg border border-slate-300/30">
-              <label class="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer bg-emerald-600 text-white shadow-sm" id="label_attend_${index}">
+          <div class="flex items-center justify-between gap-4">
+            <span class="font-bold text-slate-900 text-xs tracking-tight">${fullDateStr}</span>
+            <div class="flex bg-slate-100 p-1 rounded border border-slate-200">
+              <label class="flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-slate-800 text-white shadow-sm transition-all" id="label_attend_${index}">
                 <input type="radio" name="status_${index}" value="attend" checked class="hidden" onchange="toggleReasonField(${index}, 'attend')">
                 出席
               </label>
-              <label class="flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer text-slate-600" id="label_leave_${index}">
+              <label class="flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all" id="label_leave_${index}">
                 <input type="radio" name="status_${index}" value="leave" class="hidden" onchange="toggleReasonField(${index}, 'leave')">
                 請假
               </label>
             </div>
           </div>
-          <div id="reason_container_${index}" class="hidden pt-1 border-t border-dashed border-slate-200">
-            <input type="text" id="reason_${index}" placeholder="請輸入請假原因 (例如：返工 / 考試 / 其他)" class="w-full p-2.5 border border-rose-200 rounded-lg outline-none bg-white text-xs font-medium text-slate-700 focus:border-rose-400">
+          <div id="reason_container_${index}" class="hidden pt-3 border-t border-slate-100">
+            <input type="text" id="reason_${index}" placeholder="註明原因 (如: 返工/考試)" class="w-full p-2.5 border border-slate-200 rounded outline-none bg-slate-50 text-xs font-bold text-slate-900 focus:border-slate-900 transition-all">
           </div>
           <input type="hidden" id="raw_date_${index}" value="${fullDateStr}">
         `;
@@ -138,14 +163,14 @@
       const reasonInput = document.getElementById(`reason_${index}`);
 
       if(status === 'attend') {
-        attendLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer bg-emerald-600 text-white shadow-sm";
-        leaveLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer text-slate-600";
+        attendLabel.className = "flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-slate-800 text-white shadow-sm transition-all";
+        leaveLabel.className = "flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all";
         reasonContainer.classList.add('hidden');
         reasonInput.required = false;
         reasonInput.value = ''; 
       } else {
-        attendLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer text-slate-600";
-        leaveLabel.className = "flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold cursor-pointer bg-rose-600 text-white shadow-sm";
+        attendLabel.className = "flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer text-slate-400 transition-all";
+        leaveLabel.className = "flex items-center gap-1 px-4 py-1.5 rounded-sm text-[10px] font-black cursor-pointer bg-rose-800 text-white shadow-sm transition-all";
         reasonContainer.classList.remove('hidden');
         reasonInput.required = true;
       }
@@ -153,8 +178,9 @@
 
     document.getElementById('rosterForm').addEventListener('submit', async function(e) {
       e.preventDefault();
+      const originalText = submitBtn.innerText;
       submitBtn.disabled = true;
-      submitBtn.innerText = '正在提交資料...';
+      submitBtn.innerText = '正在上傳申報紀錄...';
 
       const name = document.getElementById('chineseName').value;
       const subUnit = subUnitSelect.value;
@@ -172,7 +198,6 @@
         const status = document.querySelector(`input[name="status_${i}"]:checked`).value;
         const reason = status === 'leave' ? document.getElementById(`reason_${i}`).value.trim() : '';
         
-        // 隊長不論選擇「出席」或「請假」都會送出紀錄進行保存
         const req = fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
@@ -192,13 +217,17 @@
         promises.push(req);
       }
 
-      if (promises.length > 0) {
-        await Promise.all(promises);
+      try {
+        if (promises.length > 0) {
+          await Promise.all(promises);
+        }
+        alert('月度申報已成功保存。');
+      } catch (e) {
+        alert('提交過程出現問題，請檢查網絡。');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
       }
-
-      alert('申報提交成功。資料已記錄至系統。');
-      submitBtn.disabled = false;
-      submitBtn.innerText = '確認並提交全月意向';
     });
 
     window.addEventListener('DOMContentLoaded', initPage);
